@@ -11,9 +11,8 @@ class TicketController:
     @classmethod
     def create_ticket(cls, data):
         """Create a new ticket."""
-        highest_ticket_id = cls._get_highest_ticket_id() + 1
         new_ticket = Ticket(
-            ticket_id=highest_ticket_id,
+            ticket_id=cls._get_highest_ticket_id() + 1,
             name=data["name"],
             status=data["status"]
         )
@@ -66,4 +65,5 @@ class TicketController:
             return max([u.get_id() for u in cls._tickets])
 
     @classmethod
-    def update_ticket(cls, ticket_id):            
+    def update_ticket(cls, ticket_id, ticket_data):
+        """Loop over all tickets and return True if the name matches"""
