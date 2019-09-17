@@ -12,6 +12,25 @@ class Ticket:
         self._people = []
         self._status = "open"
 
+    def create_ticket(self, ticket_data):
+        """create a ticket."""
+        new_ticket = {
+            "id": get_highest_ticket_id() + 1,
+            "title": ticket_data["title"],
+            "assignee": None,
+            "status": 0
+        }
+        response = (
+            jsonify(
+                success_response_body(
+                    new_ticket
+                )
+            ),
+            201
+        )
+
+        return response
+
     def get_name(self):
         """Return the name of the ticket."""
         return self._name
