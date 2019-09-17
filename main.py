@@ -23,7 +23,7 @@ def create_ticket():
     """Create a new ticket."""
     ticket_data = request.get_json()
     new_ticket = TicketController.create_ticket(ticket_data)
-    return jsonify(new_ticket)
+    return jsonify(new_ticket.conv_ticket_to_dict())
 
 @app.route("/ticket/<int:ticket_id>", methods=["DELETE"])
 def delete_ticket(ticket_id):

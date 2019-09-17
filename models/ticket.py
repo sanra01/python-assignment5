@@ -12,11 +12,11 @@ class Ticket:
         self._people = []
         self._status = "open"
 
-    def create_ticket(self, ticket_data):
+    def conv_ticket_to_dict(self):
         """Create a ticket."""
         new_ticket = {
             "id": self._id,
-            "title": ticket_data["title"],
+            "title": self.get_name(),
             "assignee": None,
             "status": 0
         }
