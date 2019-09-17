@@ -28,13 +28,14 @@ class TicketController:
     @classmethod
     def get_tickets(cls):
         """Get a list of all the tickets."""
-        return cls._tickets
+        return list(map(lambda d: d.conv_ticket_to_dict(), cls._tickets))
+
 
     @classmethod
     def get_ticket_by_id(cls, ticket_id):
         """Get the ticket by ID."""
         tickets_by_id = list(
-            filter(lambda d: d.get_ticket_id() == ticket_id, cls._tickets)
+            filter(lambda d: d.get_id() == ticket_id, cls._tickets)
         )
 
         return tickets_by_id[0]
