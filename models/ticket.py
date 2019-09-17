@@ -13,19 +13,15 @@ class Ticket:
         self._status = "open"
 
     def create_ticket(self, ticket_data):
-        """create a ticket."""
+        """Create a ticket."""
         new_ticket = {
-            "id": get_highest_ticket_id() + 1,
+            "id": self._id,
             "title": ticket_data["title"],
             "assignee": None,
             "status": 0
         }
         response = (
-            jsonify(
-                success_response_body(
-                    new_ticket
-                )
-            ),
+            new_ticket,
             201
         )
 

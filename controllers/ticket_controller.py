@@ -12,22 +12,21 @@ class TicketController:
     def create_ticket(cls, data):
         """Create a new ticket."""
         new_ticket = Ticket(
-            ticket_id=cls._get_highest_ticket_id() + 1,
-            name=data["name"],
-            status=data["status"]
+            ticket_id=cls.get_highest_ticket_id() + 1,
+            name=data["name"]
         )
         cls._tickets.append(new_ticket)
         return new_ticket
 
-   @classmethod
-   def delete_ticket(cls, ticket_id):
-       """Delete an existing ticket."""
-       for ticket in cls._tickets:
-           if ticket.get_id == ticket_id:
-               cls._tickets.remove(ticket)
+    @classmethod
+    def delete_ticket(cls, ticket_id):
+        """Delete an existing ticket."""
+        for ticket in cls._tickets:
+            if ticket.get_id == ticket_id:
+                cls._tickets.remove(ticket)
 
     @classmethod
-    def get_tickets(self):
+    def get_tickets(cls):
         """Get a list of all the tickets."""
         return cls._tickets
 
@@ -43,16 +42,16 @@ class TicketController:
     @classmethod
     def has_ticket_named(cls, name):
         """Loop over all tickets and return True if the name matches."""
-        for ticket in self._tickets:
+        for ticket in cls._tickets:
             if ticket.get_name() == name:
                 return True
         return False
 
     @classmethod
-    def has_ticket_id(cls, id):
+    def has_ticket_id(cls, ticket_id):
         """Loop over all tickets and return True if the id matches."""
         for ticket in cls._tickets:
-            if ticket.get_id() == id:
+            if ticket.get_id() == ticket_id:
                 return True, ticket
         return False
 
@@ -66,4 +65,4 @@ class TicketController:
 
     @classmethod
     def update_ticket(cls, ticket_id, ticket_data):
-        """Loop over all tickets and return True if the name matches"""
+        """Loop over all tickets and return True if the name matches."""
