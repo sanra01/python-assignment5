@@ -1,99 +1,84 @@
 """The main module of the application."""
 
-import sys
-
-from input_output.user_input import Input
-from input_output.terminal_output import Output
-from models.user import User
-from models.ticket import Ticket
-from controllers.user_controller import UserController
+from flask import Flask, jsonify, request
 from controllers.ticket_controller import TicketController
+from controllers.user_controller import UserController
 
-def main():
-    """Run the application."""
-    userc = UserController()
-    ticketc = TicketController()
-    ticket_id = 0
-    while True:
-        Output.print_bold("What would you like to do?")
-        user_input = Input.get_input()
+app = Flask(__name__) # pylint: disable=invalid-name
 
-        if user_input == "create person":
-            user_name = Input.get_person_name()
-            person = User(user_name)
-            Output.print_bold(f"{person.get_name()} has been created.")
-            if not userc.has_person_named(person):
-                userc.add_person(person)
-            else:
-                Output.print_error(
-                    f"A person named {user_name} is already present."
-                )
+@app.route("/ticket")
+def get_ticket_list():
+    """Get a list of tickets."""
+    tickets_array = TicketController.get_tickets()
+    return jsonify(tickets_array)
 
-        elif user_input == "list people":
-            people = userc.get_people()
-            if not people:
-                Output.print_bold("There are no people.")
-            else:
-                print("These are the people known to the system:")
-                for person in userc.get_people():
-                    print(f"- {person.get_name()}")
+@app.route("/ticket/<int:ticket_id>")
+def get_single_ticket(ticket_id):
+    """Get the details of a single ticket."""
+    tickets_array = TicketController.get_ticket_by_id(ticket_id)
+    return jsonify(tickets_array)
 
-        elif user_input == "open ticket":
-            ticket_name = Input.get_ticket_name()
-            ticket_id = ticket_id + 1
-            ticket = Ticket(ticket_name, ticket_id)
-            ticketc.add_ticket(ticket)
-            Output.print_bold(f"A ticket {ticket.get_name()} is created with ID {ticket.get_id()}")
+@app.route("/ticket", methods=["POST"])
+def create_ticket():
+    """Create a new ticket."""
+    ticket_data = request.get_json()
+    new_ticket = TicketController.create_ticket(ticket_data)
+    return jsonify(new_ticket)
 
-        elif user_input == "close ticket":
-            ticket_id = Input.get_ticket_id()
-            if ticketc.has_ticket_id(ticket_id):
-                ticket = ticketc.get_ticket(ticket_id)
-                ticket_name = ticket.get_name()
-                ticket.set_status()
-                Output.print_bold(f"Ticket {ticket_name} is closed")
-            else:
-                Output.print_error(f"Ticket with ID:{ticket_id} do not exist.")
+@app.route("/ticket/<int:ticket_id>", methods=["DELETE"])
+def delete_ticket(ticket_id):
+    """Delete a ticket."""
+    del_ticket = TicketController.delete_ticket(ticket_id)
+    return jsonify(del_ticket)
 
-        elif user_input == "assign ticket":
-            ticket_id = Input.get_ticket_id()
-            if ticketc.has_ticket_id(ticket_id):
-                ticket_owner = Input.get_ticket_owner()
-                if userc.has_person_named(ticket_owner):
-                    ticket = ticketc.get_ticket(ticket_id)
-                    ticket.set_assignee(ticket_owner)
-                    Output.print_bold(f"Ticket {ticket.get_name()} has been assigned to "
-                                      f"{ticket.get_assignee()}.")
-                else:
-                    Output.print_error(
-                        f"Person with name {ticket_owner} do not exist."
-                    )
-            else:
-                Output.print_error(
-                    f"Ticket with ID:{ticket_id} do not exist."
-                )
+@app.route("/ticket/<int:ticket_id>", methods=["PUT"])
+def update_ticket(ticket_id):
+    """Update a ticket."""
+    ticket_data = request.get_json()
+    put_ticket = TicketController.update_ticket(ticket_id, ticket_data)
+    return jsonify(put_ticket)
 
-        elif user_input == "list open tickets":
-            tickets = ticketc.get_tickets()
-            if not tickets:
-                Output.print_bold("There are no tickets.")
-            else:
-                Output.print_bold("These are open tickets:")
-                for ticket in tickets:
-                    if ticket.get_status() == 'open':
-                        print(f"{ticket.get_id()}: {ticket.get_name()} ({ticket.get_assignee()})")
+@app.route("/user")
+def get_user_list():
+    """Get a list of users."""
+    user_array = UserController.get_users()
+    return jsonify(user_array)
 
-        elif user_input == "list all tickets":
-            tickets = ticketc.get_tickets()
-            if not tickets:
-                Output.print_bold("There are no tickets.")
-            else:
-                Output.print_bold("These tickets are known to the system:")
-                for ticket in tickets:
-                    print(f"{ticket.get_id()}: {ticket.get_name()} ({ticket.get_assignee()})")
+@app.route("/user/<int:user_id>")
+def get_single_user(user_id):
+    """Get the details of a of user."""
+    user_array = UserController.get_users_by_id(user_id)
+    return jsonify(user_array)
 
-        elif user_input == "exit":
-            sys.exit()
+@app.route("/user", methods=["POST"])
+def create_user():
+    """Create a new user."""
+    user_data = request.get_json()
+    new_user = UserController.create_user(user_data)
+    return jsonify(new_user)
+
+@app.route("/user/<int:user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    """Delete a user."""
+    del_user = UserController.delete_ticket(user_id)
+    return jsonify(del_user)
+
+@app.route("/user/<int:user_id>", methods=["PUT"])
+def update_user(user_id):
+    """Update a user."""
+    user_data = request.get_json()
+    put_user = UserController.update_user(user_id, user_data)
+    return jsonify(put_user)
+
+@app.errorhandler(404)
+def not_found(_error):
+    """Return the notfound page for missing paths."""
+    my_404_str = {
+        "code": 404,
+        "error": "This API call does not exist",
+        "result": False
+    }
+    return jsonify(my_404_str), 404
 
 if __name__ == "__main__":
-    main()
+    app.run()
