@@ -1,38 +1,69 @@
 """The operation_ticket module, containing the OperateT object."""
 
+from models.ticket import Ticket
+
+
 class TicketController:
     """The operatet object."""
 
-    # this is a class variable
+    _tickets = []
 
-    def __init__(self):
-        """Instantiate the operatet object."""
-        self._tickets = []
+    @classmethod
+    def create_ticket(cls, data):
+        """Create a new ticket."""
+        new_ticket = Ticket(
+            ticket_id=cls._get_highest_ticket_id() + 1,
+            name=data["name"],
+            status=data["status"]
+        )
+        cls._tickets.append(new_ticket)
+        return new_ticket
 
-    def add_ticket(self, ticket):
-        """Add a ticket."""
-        self._tickets.append(ticket)
+   @classmethod
+   def delete_ticket(cls, ticket_id):
+       """Delete an existing ticket."""
+       for ticket in cls._tickets:
+           if ticket.get_id == ticket_id:
+               cls._tickets.remove(ticket)
 
+    @classmethod
     def get_tickets(self):
         """Get a list of all the tickets."""
-        return self._tickets
+        return cls._tickets
 
-    def get_ticket(self, id):
-        """Get ticket object if the id matches."""
-        for ticket in self._tickets:
-            if ticket.get_id() == id:
-                return ticket
+    @classmethod
+    def get_ticket_by_id(cls, ticket_id):
+        """Get the ticket by ID."""
+        tickets_by_id = list(
+            filter(lambda d: d.get_ticket_id() == ticket_id, cls._tickets)
+        )
 
-    def has_ticket_named(self, name):
+        return tickets_by_id[0]
+
+    @classmethod
+    def has_ticket_named(cls, name):
         """Loop over all tickets and return True if the name matches."""
         for ticket in self._tickets:
             if ticket.get_name() == name:
                 return True
         return False
 
-    def has_ticket_id(self, id):
+    @classmethod
+    def has_ticket_id(cls, id):
         """Loop over all tickets and return True if the id matches."""
-        for ticket in self._tickets:
+        for ticket in cls._tickets:
             if ticket.get_id() == id:
                 return True, ticket
         return False
+
+    @classmethod
+    def get_highest_ticket_id(cls):
+        """Return the highest ticket id."""
+        if not cls._tickets:
+            return 0
+        else:
+            return max([u.get_id() for u in cls._tickets])
+
+    @classmethod
+    def update_ticket(cls, ticket_id, ticket_data):
+        """Loop over all tickets and return True if the name matches"""
