@@ -16,7 +16,7 @@ def get_ticket_list():
 def get_single_ticket(ticket_id):
     """Get the details of a single ticket."""
     tickets_array = TicketController.get_ticket_by_id(ticket_id)
-    return jsonify(tickets_array)
+    return jsonify(tickets_array.conv_ticket_to_dict())
 
 @app.route("/ticket", methods=["POST"])
 def create_ticket():
@@ -28,8 +28,9 @@ def create_ticket():
 @app.route("/ticket/<int:ticket_id>", methods=["DELETE"])
 def delete_ticket(ticket_id):
     """Delete a ticket."""
-    del_ticket = TicketController.delete_ticket(ticket_id)
-    return jsonify(del_ticket)
+    TicketController.delete_ticket(ticket_id)
+    response = success_response_body({})
+    return response
 
 @app.route("/ticket/<int:ticket_id>", methods=["PUT"])
 def update_ticket(ticket_id):
@@ -79,6 +80,10 @@ def not_found(_error):
         "result": False
     }
     return jsonify(my_404_str), 404
+
+def success_response_body(data):
+    """Return a successful message."""
+    return {"result": True, "data": data}    
 
 if __name__ == "__main__":
     app.run()

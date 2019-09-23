@@ -13,21 +13,15 @@ class Ticket:
         self._status = "open"
 
     def conv_ticket_to_dict(self):
-        """Create a ticket."""
-        new_ticket = {
-            "id": self._id,
-            "title": self.get_name(),
-            "assignee": None,
-            "status": 0
+        """Return a dict of the ticket."""
+        return {
+            "name": self.get_ticket_name(),
+            "ticket_id": self.get_id(),
+            "ticket_assignee": self.get_assignee(),
+            "status": self.get_status()
         }
-        response = (
-            new_ticket,
-            201
-        )
 
-        return response
-
-    def get_name(self):
+    def get_ticket_name(self):
         """Return the name of the ticket."""
         return self._name
 
@@ -43,7 +37,7 @@ class Ticket:
         """Get assignee for the ticket."""
         return self._person
 
-    def set_status(self):
+    def set_status_close(self):
         """Set status for the ticket."""
         self._status = "close"
 

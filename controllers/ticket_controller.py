@@ -22,9 +22,9 @@ class TicketController:
     def delete_ticket(cls, ticket_id):
         """Delete an existing ticket."""
         for ticket in cls._tickets:
-            if ticket.get_id == ticket_id:
+            if ticket.get_id() == ticket_id:
                 cls._tickets.remove(ticket)
-
+        
     @classmethod
     def get_tickets(cls):
         """Get a list of all the tickets."""
